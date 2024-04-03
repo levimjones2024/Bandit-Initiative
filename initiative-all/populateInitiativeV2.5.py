@@ -92,13 +92,11 @@ def makeList():
     modifier = input("What is their modifier? (leave empty if initiative has already been rolled) ")
     try:
         modifier = int(modifier)
-        print("modifier")
         unitNumber = int(input("How many of them are there? "))
     except ValueError:
         if modifier == "":
             initiative = int(input("What is their initiative? "))
             setInitiative = True
-            print("modifier empty")
             unitNumber = 1
         else:
             print("This isn't a number!")
