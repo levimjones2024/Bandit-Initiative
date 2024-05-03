@@ -34,8 +34,6 @@ def main():
             break
 
 
-
-
 def runInitiative(summary, prettyList, unitHealth):
     initiativeCounter = 0
 
@@ -58,29 +56,80 @@ def runInitiative(summary, prettyList, unitHealth):
 
 
             if placeCounter == initiativeCounter:
-                if "^" in i:
+                if "^" in i: #the "^" flag is an internal part that is printed to simplify development, it's presence indicates that the unit in question has a dictionary enrty.
                     d20Roll = random.randint(1, 20)
                     for j in range(NPCUnit[unitUse][2]):
                         damageRoll += random.randint(1, NPCUnit[unitUse][3])
                     damageRoll += NPCUnit[unitUse][4]
+                    #crit detection, here using a tablerule called "crunchy crit" where you deal max possible damage from one roll of the dice, manually roll again, and add the two for actual crit damage.
                     if d20Roll == 20:
                         damageRoll += (NPCUnit[unitUse][2]*NPCUnit[unitUse][3]+NPCUnit[unitUse][4])
-                        print(f"{f'{i} <---':<20}Health: {unitHealth[placeCounter]}" + f"     Attack Roll: CRITICAL HIT; Damage roll: {damageRoll}")
+                        print(f"{f'{i} <---':<20}Health: {unitHealth[placeCounter]} ID: {placeCounter}" + f"     Attack Roll: CRITICAL HIT; Damage roll: {damageRoll}")
                     else:
                         attackRoll = d20Roll + NPCUnit[unitUse][1]
-                        print(f"{f'{i} <---':<20}Health: {unitHealth[placeCounter]}" + f"     Attack Roll: {attackRoll}; Damage roll: {damageRoll}")
+                        print(f"{f'{i} <---':<20}Health: {unitHealth[placeCounter]} ID: {placeCounter}" + f"     Attack Roll: {attackRoll}; Damage roll: {damageRoll}")
                 else: 
-                    print(f"{f'{i} <---':<20}Health: {unitHealth[placeCounter]}")
+                    print(f"{f'{i} <---':<20}Health: {unitHealth[placeCounter]} ID: {placeCounter}")
 
             else:
-                print(f"{i: <20}Health: {unitHealth[placeCounter]}")
+                print(f"{i: <20}Health: {unitHealth[placeCounter]} ID: {placeCounter}")
 
-        userInput = input("")
-        if userInput == "exit":
-            break
+        #Initiative menu loop
+        while True:
+            userInput = input("Type 1 to quit\nType 2 to apply damage to a unit\nType 3 to add a new unit\nType 4 to continue initiative\n")
+            if userInput == "1":
+                quit()
+            elif "2" in userInput:
+                #get the health list and apply damage to the right unit
+                while True:
+                    whoAttack = input("Which ID to damage? ")
+                    try:
+                        whoAttack = int(whoAttack)
+                        if whoAttack < len(prettyList):
+                            howMuchDamage = input("How much damage? ")
+                            try:
+                                howMuchDamage = int(howMuchDamage)
+                                unitHealth[whoAttack] = unitHealth[whoAttack] - howMuchDamage
+                            except ValueError:
+                                print("That is not a number!")
+                            break
+                        else:
+                            print("I don't know who that is!")
+                    except ValueError:
+                        print("That isn't a number")
+            elif userInput == "3":
+                unitAdd = input("What is the name of the new unit? ")
+                unitAddInitiative = safeMakeInt("What is their initiative? ")
+                unitAdd = unitAdd + " " + str(unitAddInitiative)
+                unitAddHealth = safeMakeInt("How much Health do they have? (0 if N/A) ")
+                whereToAdd = -1
+
+                for initiative in prettyList:
+                    initiative = initiative[-3:]
+                    whereToAdd += 1
+                    if int(initiative) > int(unitAddInitiative):
+                        print(whereToAdd, initiative)
+                    else:
+                        print("Found it", whereToAdd)
+                        unitHealth.insert(whereToAdd, unitAddHealth)
+                        prettyList.insert(whereToAdd, unitAdd)
+                        break
+
+            elif userInput == "4":
+                break
+
         initiativeCounter += 1
     None
 
+
+def safeMakeInt(mesaage):
+    while True:
+        toBeInt = input(mesaage)
+        try:
+            toBeInt = int(toBeInt)
+            return toBeInt
+        except ValueError:
+            print("That is not a number!")
 
 
 def makeList():
@@ -137,10 +186,8 @@ def assembleList(summary):
             for key in NPCUnit.keys():
                 if key in __:
                     unitHealth.append(NPCUnit[key][0])
-            print(unitHealth[i])
         else:
             unitHealth.append(0)
-    print(unitHealth)
             
                 
     return summary, unitHealth
