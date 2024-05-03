@@ -13,11 +13,7 @@ def main():
 
 
     while (True):
-        action = input("What do you want to do now?\nType 0 for help\n")
-        try:
-            action = int(action)
-        except ValueError:
-            print("I'm sorry, I don't understand that")
+        action = safeMakeInt("What do you want to do now?\nType 0 for help\n")
 
         if action == 0:
             print("Help is here!\nType 0 for help (but you already knew that)\nType 1 to add a new type of unit and generate it's initiative\nType 2 to assemble and sort the generated units' initiatives\nType 3 to run initiative (requires an assembled list)\nType 4 to exit immediately")
@@ -74,35 +70,53 @@ def runInitiative(summary, prettyList, unitHealth):
             else:
                 print(f"{i: <20}Health: {unitHealth[placeCounter]} ID: {placeCounter}")
 
-        #Damage menu loop
+        #Initiative menu loop
         while True:
-            userInput = input("Type 1 to quit\nType 2 to apply damage to a unit\nType 3 to continue initiative\n")
+            userInput = input("Type 1 to quit\nType 2 to apply damage to a unit\nType 3 to add a new unit\nType 4 to continue initiative\n")
             if userInput == "1":
                 quit()
             elif "2" in userInput:
                 #get the health list and apply damage to the right unit
                 while True:
-                    whoAttack = input("Which ID to damage? ")
-                    try:
-                        whoAttack = int(whoAttack)
-                        if whoAttack < len(prettyList):
-                            howMuchDamage = input("How much damage? ")
-                            try:
-                                howMuchDamage = int(howMuchDamage)
-                                unitHealth[whoAttack] = unitHealth[whoAttack] - howMuchDamage
-                            except ValueError:
-                                print("That is not a number!")
-                            break
-                        else:
-                            print("I don't know who that is!")
-                    except ValueError:
-                        print("That isn't a number")
+                    whoAttack = safeMakeInt("Which ID to damage? ")
+                    if whoAttack < len(prettyList):
+                        howMuchDamage = safeMakeInt("How much damage? ")
+                        unitHealth[whoAttack] = unitHealth[whoAttack] - howMuchDamage
+                        break
+                    else:
+                        print("I don't know who that is!")
             elif userInput == "3":
+                unitAdd = input("What is the name of the new unit? ")
+                unitAddInitiative = safeMakeInt("What is their initiative? ")
+                unitAdd = unitAdd + " " + str(unitAddInitiative)
+                unitAddHealth = safeMakeInt("How much Health do they have? (0 if N/A) ")
+                whereToAdd = -1
+
+                for initiative in prettyList:
+                    initiative = initiative[-3:]
+                    whereToAdd += 1
+                    if int(initiative) > int(unitAddInitiative):
+                        print(whereToAdd, initiative)
+                    else:
+                        print("Found it", whereToAdd)
+                        unitHealth.insert(whereToAdd, unitAddHealth)
+                        prettyList.insert(whereToAdd, unitAdd)
+                        break
+
+            elif userInput == "4":
                 break
 
         initiativeCounter += 1
     None
 
+def safeMakeInt(mesaage):
+    while True:
+        toBeInt = input(mesaage)
+        try:
+            toBeInt = int(toBeInt)
+            return toBeInt
+        except ValueError:
+            print("I don't know what that is!")
 
 
 def makeList():
