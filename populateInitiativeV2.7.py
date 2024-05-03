@@ -114,7 +114,6 @@ def runInitiative(summary, prettyList, unitHealth):
                         unitHealth.insert(whereToAdd, unitAddHealth)
                         prettyList.insert(whereToAdd, unitAdd)
                         break
-                    apply change
 
             elif userInput == "4":
                 break
