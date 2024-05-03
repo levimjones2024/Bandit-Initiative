@@ -121,7 +121,6 @@ def runInitiative(summary, prettyList, unitHealth):
         initiativeCounter += 1
     None
 
-
 def safeMakeInt(mesaage):
     while True:
         toBeInt = input(mesaage)
