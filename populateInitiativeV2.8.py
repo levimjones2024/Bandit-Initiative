@@ -11,7 +11,6 @@ NPCUnit = {
 def main():
     summary = []
 
-
     while (True):
         action = safeMakeInt("What do you want to do now?\nType 0 for help\n")
 
